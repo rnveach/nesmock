@@ -23,7 +23,7 @@ SMALL    {font-size:70%}
   <h1>NES movie fileformat converter</h1>
   <h2 class=level2> 0. Contents </h2>
   
-  This is the documentation of nesmock-1.1.0.
+  This is the documentation of nesmock-1.1.1.
 <div class=toc><table cellspacing=0 cellpadding=0 class=toc><tr><td width="50%" valign=middle align=left nowrap class=toc>&nbsp;&nbsp;&nbsp;1. <a href="#h0">Purpose</a><br>&nbsp;&nbsp;&nbsp;2. <a href="#usage">Usage</a><br>&nbsp;&nbsp;&nbsp;3. <a href="#h1">Copying</a><br></td>
 <td width="50%" valign=middle align=left nowrap class=toc>&nbsp;&nbsp;&nbsp;4. <a href="#h2">Requirements</a><br>&nbsp;&nbsp;&nbsp;5. <a href="#h3">Thoughs</a><br>&nbsp;&nbsp;&nbsp;6. <a href="#download">Downloading</a><br></td>
 </tr></table></div><H2 id="h0" class="level2"><a name="h0"></a>1. Purpose</H2><div class="level2" id="divh0">
@@ -74,7 +74,6 @@ These things are currently missing:
  <li>VirtuaNES movie write support</li>
  <li>Nesticle movie read support</li>
  <li>Nesticle movie write support</li>
- <li>Nintendulator movie read support</li>
  <li>Nintendulator movie write support</li>
  <li>FCEU savestate read support</li>
  <li>FCEU savestate write support</li>
@@ -92,7 +91,8 @@ For the program (including the Windows binary), you need a commandline.<br>
 </div><H2 id="h3" class="level2"><a name="h3"></a>5. Thoughs</H2><div class="level2" id="divh3">
 
 Different emulators emulate differently. This is a fact.
-For this reason, sometimes straight conversions of the movies don't just work.
+For this reason, usually straight conversions of the movies
+don't just work.
  <p>
 It is unfortunately impossible to guess from the movie file alone where
 would the emulator need more / less frames than the other emulator.
@@ -101,16 +101,17 @@ A more elaborate conversion could be made by running the two emulators
 simultaneously and keeping track of their status, and when the other goes
 desync, backtrack and bruteforce the combination that puts it back to track.
 This kind of method is however extremely difficult to implement. And it
-still might be impossible - the timings just wouldn't match.
+still might be impossible - if the game does calculations based on scanline
+counters, there could be no way to make them match.
 
 </div><H2 id="download" class="level2"><a name="download"></a>6. Downloading</H2><div class="level2" id="divdownload">
    The official home page of nesmock
    is at <a href="http://iki.fi/bisqwit/source/nesmock.html">http://iki.fi/bisqwit/source/nesmock.html</a>.<br>
    Check there for new versions.
 </div> <p align=right><small>Generated from
-       <tt>progdesc.php</tt> (last updated: Sun,  5 Dec 2004 21:11:37 +0200)<br>
+       <tt>progdesc.php</tt> (last updated: Sat, 11 Dec 2004 09:19:15 +0200)<br>
   with <tt>docmaker.php</tt> (last updated: Sat, 25 Sep 2004 03:19:11 +0300)<br>
-  at Sun,  5 Dec 2004 21:12:21 +0200</small>
+  at Sat, 11 Dec 2004 10:24:38 +0200</small>
  </p>
 </body>
 </html>
