@@ -1,3 +1,7 @@
+
+Notice: Undefined offset:  2 in /shares/home/root/src/nesmock/docmaker.php on line 25
+
+Notice: Undefined variable:  outset in /shares/home/root/src/nesmock/docmaker.php on line 47
 <html><head><meta http-equiv="Content-type" content="text/html; charset=iso-8859-1">
  <title>NES movie fileformat converter</title>
  <style type="text/css"><!--
@@ -23,20 +27,47 @@ SMALL    {font-size:70%}
   <h1>NES movie fileformat converter</h1>
   <h2 class=level2> 0. Contents </h2>
   
-  This is the documentation of nesmock-1.0.0.
-<div class=toc><table cellspacing=0 cellpadding=0 class=toc><tr><td width="50%" valign=middle align=left nowrap class=toc>&nbsp;&nbsp;&nbsp;1. <a href="#h0">Purpose</a><br>&nbsp;&nbsp;&nbsp;2. <a href="#usage">Usage</a><br></td>
-<td width="50%" valign=middle align=left nowrap class=toc>&nbsp;&nbsp;&nbsp;3. <a href="#h1">Copying</a><br>&nbsp;&nbsp;&nbsp;4. <a href="#h2">Requirements</a><br>&nbsp;&nbsp;&nbsp;5. <a href="#download">Downloading</a><br></td>
-</tr></table></div><H2 id="h0" class="level2"><a name="h0"></a>1. Purpose</H2><div class="level2" id="divh0">
+  This is the documentation of nesmock-1.1.0.
+
+Notice: Undefined variable:  title_ext in /shares/home/WWW/document.php on line 52
+
+Notice: Undefined variable:  title_ext in /shares/home/WWW/document.php on line 52
+
+Notice: Undefined variable:  title_ext in /shares/home/WWW/document.php on line 52
+
+Notice: Undefined variable:  title_ext in /shares/home/WWW/document.php on line 52
+
+Notice: Undefined variable:  title_ext in /shares/home/WWW/document.php on line 52
+
+Notice: Undefined variable:  title_ext in /shares/home/WWW/document.php on line 52
+<div class=toc><table cellspacing=0 cellpadding=0 class=toc><tr><td width="50%" valign=middle align=left nowrap class=toc>&nbsp;&nbsp;&nbsp;1. <a href="#h0">Purpose</a><br>&nbsp;&nbsp;&nbsp;2. <a href="#usage">Usage</a><br>&nbsp;&nbsp;&nbsp;3. <a href="#h1">Copying</a><br></td>
+<td width="50%" valign=middle align=left nowrap class=toc>&nbsp;&nbsp;&nbsp;4. <a href="#h2">Requirements</a><br>&nbsp;&nbsp;&nbsp;5. <a href="#h3">Thoughs</a><br>&nbsp;&nbsp;&nbsp;6. <a href="#download">Downloading</a><br></td>
+</tr></table></div>
+Notice: Undefined variable:  ozi_pre in /shares/home/WWW/document.php on line 104
+<H2 id="h0" class="level2"><a name="h0"></a>1. Purpose
+Notice: Undefined variable:  ozi_ext in /shares/home/WWW/document.php on line 119
+</H2><div class="level2" id="divh0">
 
 This program converts different format NES movies to other formats.
 
-</div><H2 id="usage" class="level2"><a name="usage"></a>2. Usage</H2><div class="level2" id="divusage">
+</div>
+Notice: Undefined variable:  ozi_pre in /shares/home/WWW/document.php on line 104
+<H2 id="usage" class="level2"><a name="usage"></a>2. Usage
+Notice: Undefined variable:  ozi_ext in /shares/home/WWW/document.php on line 119
+</H2><div class="level2" id="divusage">
 
-<pre class=smallerpre>deeng v1.0.0 - Copyright (C) 1992,2004 Bisqwit (http://iki.fi/bisqwit/)
+<pre class=smallerpre>nesmock v1.1.0 - Copyright (C) 1992,2004 Bisqwit (http://iki.fi/bisqwit/)
+
 Usage: nesmock [&lt;options&gt;] &lt;inputfile&gt; &lt;outputfile&gt;
+
 Transforms NES movie files to different formats.
  --help, -h     This help
- --offset, -o   Set frame offset
+ --offset, -o   Insert delay at &lt;frame&gt;,&lt;length&gt;
+                Example usage: -o 14501:1
+                Delay length may also be negative, in which case
+                existing frames are deleted instead of copied.
+                Frame numbers are relative to the original movie.
+                Short syntax -o 10 uses frame number 0 by default.
  --version, -V  Displays version information
 
 Supported formats:
@@ -49,33 +80,87 @@ Example:
 
 </pre>
 
-The offset is sometimes (usually) needed because different emulators
-have different boot-up times.<br>
-Getting the right offset is usually trial&amp;error work, and even so,
-it's possible that the resulting movie will not play properly (desync)
-in the target emulator. This is because the emulators run the game
-slightly differently. Sometimes it matters, sometimes it doesn't.
-Consider yourself lucky if the conversion works.
+Offsets and delays are usually needed because different emulators
+have different timings in various details.
+Adjusting them is usually trial&amp;error work.
+ <p>
+If you are doubting whether this program actually works at all, try converting
+Super Mario Bros movies. I have had complete success with them.
+ <p>
+Hint: Nesmock can be used for editing FCM files by first
+converting them to FMV (which is easier to edit than FCM)
+and then back to FCM.
 
-</div><H2 id="h1" class="level2"><a name="h1"></a>3. Copying</H2><div class="level2" id="divh1">
+</div>
+Notice: Undefined variable:  ozi_pre in /shares/home/WWW/document.php on line 104
+<H2 id="h1" class="level2"><a name="h1"></a>3. Copying
+Notice: Undefined variable:  ozi_ext in /shares/home/WWW/document.php on line 119
+</H2><div class="level2" id="divh1">
 
 nesmock has been written by Joel Yliluoma, a.k.a.
 <a href="http://iki.fi/bisqwit/">Bisqwit</a>,<br>
 and is distributed under the terms of the
 <a href="http://www.gnu.org/licenses/licenses.html#GPL">General Public License</a> (GPL).
+ <p>
+If you are an emulator developer, you are welcome to hack this source
+code and add more format support to the code.<br>
+These things are currently missing:
+<ul>
+ <li>VirtuaNES movie write support</li>
+ <li>Nesticle movie read support</li>
+ <li>Nesticle movie write support</li>
+ <li>Nintendulator movie read support</li>
+ <li>Nintendulator movie write support</li>
+ <li>FCEU savestate read support</li>
+ <li>FCEU savestate write support</li>
+ <li>VirtuaNES savestate read support</li>
+ <li>VirtuaNES savestate write support</li>
+ <li>Famtasia savestate read support</li>
+ <li>Famtasia savestate write support</li>
+</ul>
 
-</div><H2 id="h2" class="level2"><a name="h2"></a>4. Requirements</H2><div class="level2" id="divh2">
+</div>
+Notice: Undefined variable:  ozi_pre in /shares/home/WWW/document.php on line 104
+<H2 id="h2" class="level2"><a name="h2"></a>4. Requirements
+Notice: Undefined variable:  ozi_ext in /shares/home/WWW/document.php on line 119
+</H2><div class="level2" id="divh2">
 
-GNU make and C++ compiler is required.<br>
+GNU make and C++ compiler is required to recompile the source code.<br>
+For the program (including the Windows binary), you need a commandline.<br>
 
-</div><H2 id="download" class="level2"><a name="download"></a>5. Downloading</H2><div class="level2" id="divdownload">
+</div>
+Notice: Undefined variable:  ozi_pre in /shares/home/WWW/document.php on line 104
+<H2 id="h3" class="level2"><a name="h3"></a>5. Thoughs
+Notice: Undefined variable:  ozi_ext in /shares/home/WWW/document.php on line 119
+</H2><div class="level2" id="divh3">
+
+Different emulators emulate differently. This is a fact.
+For this reason, usually straight conversions of the movies
+don't just work.
+ <p>
+It is unfortunately impossible to guess from the movie file alone where
+would the emulator need more / less frames than the other emulator.
+ <p>
+A more elaborate conversion could be made by running the two emulators
+simultaneously and keeping track of their status, and when the other goes
+desync, backtrack and bruteforce the combination that puts it back to track.
+This kind of method is however extremely difficult to implement. And it
+still might be impossible - the timings just wouldn't match.
+
+</div>
+Notice: Undefined variable:  ozi_pre in /shares/home/WWW/document.php on line 104
+<H2 id="download" class="level2"><a name="download"></a>6. Downloading
+Notice: Undefined variable:  ozi_ext in /shares/home/WWW/document.php on line 119
+</H2><div class="level2" id="divdownload">
    The official home page of nesmock
    is at <a href="http://iki.fi/bisqwit/source/nesmock.html">http://iki.fi/bisqwit/source/nesmock.html</a>.<br>
    Check there for new versions.
 </div> <p align=right><small>Generated from
-       <tt>progdesc.php</tt> (last updated: Sat,  4 Dec 2004 13:03:17 +0200)<br>
+       <tt>progdesc.php</tt> (last updated: Mon,  6 Dec 2004 23:40:26 +0200)<br>
   with <tt>docmaker.php</tt> (last updated: Sat, 25 Sep 2004 03:19:11 +0300)<br>
-  at Sat,  4 Dec 2004 13:06:57 +0200</small>
+  at Mon,  6 Dec 2004 23:40:48 +0200</small>
  </p>
 </body>
 </html>
+
+Notice: Undefined variable:  outset in /shares/home/root/src/nesmock/docmaker.php on line 100
