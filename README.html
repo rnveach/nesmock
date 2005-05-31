@@ -1,7 +1,3 @@
-
-Notice: Undefined offset:  2 in /shares/home/root/src/nesmock/docmaker.php on line 25
-
-Notice: Undefined variable:  outset in /shares/home/root/src/nesmock/docmaker.php on line 47
 <html><head><meta http-equiv="Content-type" content="text/html; charset=iso-8859-1">
  <title>NES movie fileformat converter</title>
  <style type="text/css"><!--
@@ -27,7 +23,7 @@ SMALL    {font-size:70%}
   <h1>NES movie fileformat converter</h1>
   <h2 class=level2> 0. Contents </h2>
   
-  This is the documentation of nesmock-1.1.3.
+  This is the documentation of nesmock-1.2.0.
 <div class=toc><table cellspacing=0 cellpadding=0 class=toc><tr><td width="50%" valign=middle align=left nowrap class=toc>&nbsp;&nbsp;&nbsp;1. <a href="#h0">Purpose</a><br>&nbsp;&nbsp;&nbsp;2. <a href="#usage">Usage</a><br>&nbsp;&nbsp;&nbsp;3. <a href="#h1">Copying</a><br></td>
 <td width="50%" valign=middle align=left nowrap class=toc>&nbsp;&nbsp;&nbsp;4. <a href="#h2">Requirements</a><br>&nbsp;&nbsp;&nbsp;5. <a href="#h3">Thoughs</a><br>&nbsp;&nbsp;&nbsp;6. <a href="#download">Downloading</a><br></td>
 </tr></table></div><H2 id="h0" class="level2"><a name="h0"></a>1. Purpose</H2><div class="level2" id="divh0">
@@ -36,7 +32,7 @@ This program converts different format NES movies to other formats.
 
 </div><H2 id="usage" class="level2"><a name="usage"></a>2. Usage</H2><div class="level2" id="divusage">
 
-<pre class=smallerpre>nesmock v1.1.3 - Copyright (C) 1992,2004 Bisqwit (http://iki.fi/bisqwit/)
+<pre class=smallerpre>nesmock v1.2.0 - Copyright (C) 1992,2005 Bisqwit (http://iki.fi/bisqwit/)
 
 Usage: nesmock [&lt;options&gt;] &lt;inputfile&gt; &lt;outputfile&gt;
 
@@ -48,6 +44,18 @@ Transforms NES movie files to different formats.
                 existing frames are deleted instead of copied.
                 Frame numbers are relative to the original movie.
                 Short syntax -o 10 uses frame number 0 by default.
+ --set, -s      Set &lt;var&gt;=&lt;value&gt;
+                Note: All movie formats don't support all values
+                      or may have length/type limitations.
+                Available vars:
+                      PAL         0 or 1
+                      RecordCount 0..n
+                      EmuName     string
+                      MovieName   string
+                      ROMName     string
+                      MD5         string (can be a 32-char hex or a filename)
+                      FCEUver     0..n (example: 9812 (=0.98.12))
+                Example usage: -spal=0 -srom=&quot;Mario Bros.nes&quot; -smd5=mario.nes
  --version, -V  Displays version information
 
 Supported formats:
@@ -81,19 +89,20 @@ and is distributed under the terms of the
  <p>
 If you are an emulator developer, you are welcome to hack this source
 code and add more format support to the code.<br>
-These things are currently missing:
+These planned things are currently missing:
 <ul>
- <li>VirtuaNES movie write support</li>
- <li>Nesticle movie read support</li>
- <li>Nesticle movie write support</li>
- <li>Nintendulator savestate read support</li>
- <li>Nintendulator savestate write support</li>
- <li>FCEU savestate read support</li>
- <li>FCEU savestate write support</li>
- <li>VirtuaNES savestate read support</li>
- <li>VirtuaNES savestate write support</li>
- <li>Famtasia savestate read support</li>
- <li>Famtasia savestate write support</li>
+ <li>Movie support for:
+  <ul>
+   <li>VirtuaNES (write)</li>
+   <li>Nesticle (read, write)</li>
+  </ul></li>
+ <li>Savestate support for:
+  <ul>
+   <li>Nintendulator (read, write)</li>
+   <li>FCEU (read, write)</li>
+   <li>VirtuaNES (read, write)</li>
+   <li>Famtasia (read, write)</li>
+  </ul></li>
 </ul>
 
 </div><H2 id="h2" class="level2"><a name="h2"></a>4. Requirements</H2><div class="level2" id="divh2">
@@ -122,9 +131,9 @@ counters, there could be no way to make them match.
    is at <a href="http://iki.fi/bisqwit/source/nesmock.html">http://iki.fi/bisqwit/source/nesmock.html</a>.<br>
    Check there for new versions.
 </div> <p align=right><small>Generated from
-       <tt>progdesc.php</tt> (last updated: Sun, 12 Dec 2004 10:08:30 +0200)<br>
-  with <tt>docmaker.php</tt> (last updated: Sat, 25 Sep 2004 03:19:11 +0300)<br>
-  at Wed, 15 Dec 2004 22:06:10 +0200</small>
+       <tt>progdesc.php</tt> (last updated: Wed, 02 Feb 2005 05:46:44 +0200)<br>
+  with <tt>docmaker.php</tt> (last updated: Sat, 22 Jan 2005 05:01:19 +0200)<br>
+  at Wed, 01 Jun 2005 00:39:00 +0300</small>
  </p>
 </body>
 </html>
