@@ -9,9 +9,15 @@ class FCEUMovie: public Movie
         void Load(const std::vector<unsigned char>& data)
         {
             // all data is ignored for now.
+            rawdata = data;
         }
         void Write(std::vector<unsigned char>& data)
         {
+            if(!rawdata.empty())
+            {
+                data = rawdata;
+                return;
+            }
             // Create a dummy FCEU save that contains nothing
             // but a header. FCEU will load it gracefully.
             // Nothing more is needed for a power-on savestate.
@@ -120,16 +126,16 @@ public:
         std::vector<unsigned char> CompressedData;
         
         #define FCMPutDeltaCommand(cmd, n, c) \
-        { \
+        do { \
             Write8(CompressedData, ((cmd) & 0x9F) | (c << 5)); \
             if(c>=1) Write8(CompressedData, ((n) >> 0) & 0xFF); \
             if(c>=2) Write8(CompressedData, ((n) >> 8) & 0xFF); \
             if(c>=3) Write8(CompressedData, ((n) >>16) & 0xFF); \
             Buffer -= n; \
-        }
+        } while(0)
         
         #define FCMPutCommand(byte) \
-        { \
+        do { \
             unsigned char b = (byte); \
             if(Buffer <= 0) { FCMPutDeltaCommand(b, 0, 0);b=0x80; } \
             while(Buffer > 0) \
@@ -139,14 +145,16 @@ public:
                 else if(Buffer > 0xFF)   { FCMPutDeltaCommand(b,Buffer,2);b=0x80; } \
                 else /*(Buffer > 0)*/    { FCMPutDeltaCommand(b,Buffer,1);b=0x80; } \
             } \
-        }
+        } while(0)
         
         int Buffer = 0;
         
         if(!Save)
         {
-            FCMPutCommand(0x82); // start with a power cycle
-            //FCMPutCommand(0x81); // start with a reset
+            if(State.rawdata.empty())
+                FCMPutCommand(0x82); // start with a power cycle
+            else
+                FCMPutCommand(0x81); // start with a reset
         }
         
         unsigned char joop[4] = {0,0,0,0};

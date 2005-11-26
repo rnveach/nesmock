@@ -101,6 +101,8 @@ public:
         uint16_t joy_readbit;
         uint32_t joy;
     public:
+        std::vector<unsigned char> rawdata;
+    public:
     } State;
 
 public:
@@ -340,6 +342,8 @@ int main(int argc, char** argv)
     std::vector<DelayData> delays;
     std::map<std::string, std::string> sets;
     
+    Movie stfile;
+    
     for(;;)
     {
         int option_index = 0;
@@ -349,9 +353,10 @@ int main(int argc, char** argv)
             {"version",  0, 0,'V'},
             {"offset",   1, 0,'o'},
             {"set",      1, 0,'s'},
+            {"state",    1, 0,'t'},
             {0,0,0,0}
         };
-        int c = getopt_long(argc, argv, "hVo:s:", long_options, &option_index);
+        int c = getopt_long(argc, argv, "hVo:s:t:", long_options, &option_index);
         if(c==-1) break;
         switch(c)
         {
@@ -387,6 +392,9 @@ int main(int argc, char** argv)
                     "                      MD5         string (can be a 32-char hex or a filename)\n"
                     "                      FCEUver     0..n (example: 9812 (=0.98.12))\n"
                     "                Example usage: -spal=0 -srom=\"Mario Bros.nes\" -smd5=mario.nes\n"
+                    " --state, -t    Copy savestate from <file>\n"
+                    "                Example: nesmock a.fmv a.fcm -t'orig.fcm'\n"
+                    "                Will also make fcm files reset-based (default: poweron-based)\n"
                     " --version, -V  Displays version information\n"
                     "\n"
                     "Supported formats:\n"
@@ -441,8 +449,18 @@ int main(int argc, char** argv)
                 sets[var] = value;
                 break;
             }
+            case 't':
+            {
+                char* arg = optarg;
+                if(!stfile.Read(LoadFile(arg)))
+                {
+                    std::cerr << "nesmock: " << arg << " is unrecognized movie file\n";
+                }
+                break;
+            }
         }
     }
+    
     if(argc != optind+2)
     {
         std::cerr << "nesmock: Invalid parameters. Try `nesmock --help'\n";
@@ -465,6 +483,11 @@ int main(int argc, char** argv)
     
     for(unsigned a=0; a<delays.size(); ++a)
         movie.ApplyDelay(delays[a].frameno, delays[a].length);
+    
+    if(!stfile.State.rawdata.empty())
+    {
+        movie.State = stfile.State;
+    }
     
     std::string ext = GetExt(fn2);
     if(ext == "fmv")
