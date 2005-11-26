@@ -32,7 +32,7 @@ This program converts different format NES movies to other formats.
 
 </div><H2 id="usage" class="level2"><a name="usage"></a>2. Usage</H2><div class="level2" id="divusage">
 
-<pre class=smallerpre>nesmock v1.2.0 - Copyright (C) 1992,2005 Bisqwit (http://iki.fi/bisqwit/)
+<pre class=smallerpre>nesmock v1.4.0 - Copyright (C) 1992,2005 Bisqwit (http://iki.fi/bisqwit/)
 
 Usage: nesmock [&lt;options&gt;] &lt;inputfile&gt; &lt;outputfile&gt;
 
@@ -53,9 +53,12 @@ Transforms NES movie files to different formats.
                       EmuName     string
                       MovieName   string
                       ROMName     string
-                      MD5         string (can be a 16-char hex or a filename)
+                      MD5         string (can be a 32-char hex or a filename)
                       FCEUver     0..n (example: 9812 (=0.98.12))
                 Example usage: -spal=0 -srom=&quot;Mario Bros.nes&quot; -smd5=mario.nes
+ --state, -t    Copy savestate from &ltfile&gt
+                Example: nesmock a.fmv a.fcm -t'orig.fcm'
+                Will also make fcm files reset-based (default: poweron-based)                
  --version, -V  Displays version information
 
 Supported formats:
@@ -110,7 +113,7 @@ These planned things are currently missing:
 GNU make and C++ compiler is required to recompile the source code.<br>
 For the program (including the Windows binary), you need a commandline.<br>
 
-</div><H2 id="h3" class="level2"><a name="h3"></a>5. Thoughs</H2><div class="level2" id="divh3">
+</div><H2 id="h3" class="level2"><a name="h3"></a>5. Thoughts</H2><div class="level2" id="divh3">
 
 Different emulators emulate differently. This is a fact.
 For this reason, usually straight conversions of the movies
@@ -132,8 +135,8 @@ counters, there could be no way to make them match.
    Check there for new versions.
 </div> <p align=right><small>Generated from
        <tt>progdesc.php</tt> (last updated: Wed, 02 Feb 2005 05:46:44 +0200)<br>
-  with <tt>docmaker.php</tt> (last updated: Sun, 12 Jun 2005 06:08:02 +0300)<br>
-  at Sat, 26 Nov 2005 17:26:53 +0200</small>
+  with <tt>docmaker.php</tt> (last updated: Sat, 22 Jan 2005 05:01:19 +0200)<br>
+  at Tue, 31 May 2005 16:20:19 +0300</small>
  </p>
 </body>
 </html>
