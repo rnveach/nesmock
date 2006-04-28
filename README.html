@@ -23,7 +23,7 @@ SMALL    {font-size:70%}
   <h1>NES movie fileformat converter</h1>
   <h2 class=level2> 0. Contents </h2>
   
-  This is the documentation of nesmock-1.4.0.
+  This is the documentation of nesmock-1.5.0.
 <div class=toc><table cellspacing=0 cellpadding=0 class=toc><tr><td width="50%" valign=middle align=left nowrap class=toc>&nbsp;&nbsp;&nbsp;1. <a href="#h0">Purpose</a><br>&nbsp;&nbsp;&nbsp;2. <a href="#usage">Usage</a><br>&nbsp;&nbsp;&nbsp;3. <a href="#h1">Copying</a><br></td>
 <td width="50%" valign=middle align=left nowrap class=toc>&nbsp;&nbsp;&nbsp;4. <a href="#h2">Requirements</a><br>&nbsp;&nbsp;&nbsp;5. <a href="#h3">Thoughs</a><br>&nbsp;&nbsp;&nbsp;6. <a href="#download">Downloading</a><br></td>
 </tr></table></div><H2 id="h0" class="level2"><a name="h0"></a>1. Purpose</H2><div class="level2" id="divh0">
@@ -32,7 +32,7 @@ This program converts different format NES movies to other formats.
 
 </div><H2 id="usage" class="level2"><a name="usage"></a>2. Usage</H2><div class="level2" id="divusage">
 
-<pre class=smallerpre>nesmock v1.4.0 - Copyright (C) 1992,2005 Bisqwit (http://iki.fi/bisqwit/)
+<pre class=smallerpre>nesmock v1.5.0 - Copyright (C) 1992,2006 Bisqwit (http://iki.fi/bisqwit/)
 
 Usage: nesmock [&lt;options&gt;] &lt;inputfile&gt; &lt;outputfile&gt;
 
@@ -48,17 +48,22 @@ Transforms NES movie files to different formats.
                 Note: All movie formats don't support all values
                       or may have length/type limitations.
                 Available vars:
-                      PAL         0 or 1
-                      RecordCount 0..n
-                      EmuName     string
-                      MovieName   string
-                      ROMName     string
-                      MD5         string (can be a 32-char hex or a filename)
-                      FCEUver     0..n (example: 9812 (=0.98.12))
+                  PAL         0 or 1
+                  RecordCount 0..n
+                  EmuName     string
+                  MovieName   string
+                  ROMName     string
+                  MD5         string (can be a 32-char hex or a filename)
+                  FCEUver     0..n (example: 9812 (=0.98.12))
                 Example usage: -spal=0 -srom=&quot;Mario Bros.nes&quot; -smd5=mario.nes
- --state, -t    Copy savestate from &ltfile&gt
+ --state, -t    Copy savestate from &lt;file&gt;
                 Example: nesmock a.fmv a.fcm -t'orig.fcm'
-                Will also make fcm files reset-based (default: poweron-based)                
+                Will also make fcm files reset-based (default: poweron-based)
+ --ctrl, -c     Defines how to handle a controller. Examples:
+                  -c2       = delete player 2 input
+                  -c2+      = add second player (zero input)
+                  -c21      = add second player (copy P1 input)
+                  -c21 -c12 = swap players' 1 and 2 inputs
  --version, -V  Displays version information
 
 Supported formats:
@@ -113,7 +118,7 @@ These planned things are currently missing:
 GNU make and C++ compiler is required to recompile the source code.<br>
 For the program (including the Windows binary), you need a commandline.<br>
 
-</div><H2 id="h3" class="level2"><a name="h3"></a>5. Thoughts</H2><div class="level2" id="divh3">
+</div><H2 id="h3" class="level2"><a name="h3"></a>5. Thoughs</H2><div class="level2" id="divh3">
 
 Different emulators emulate differently. This is a fact.
 For this reason, usually straight conversions of the movies
@@ -135,8 +140,8 @@ counters, there could be no way to make them match.
    Check there for new versions.
 </div> <p align=right><small>Generated from
        <tt>progdesc.php</tt> (last updated: Wed, 02 Feb 2005 05:46:44 +0200)<br>
-  with <tt>docmaker.php</tt> (last updated: Sat, 22 Jan 2005 05:01:19 +0200)<br>
-  at Tue, 31 May 2005 16:20:19 +0300</small>
+  with <tt>docmaker.php</tt> (last updated: Sun, 12 Jun 2005 06:08:02 +0300)<br>
+  at Fri, 28 Apr 2006 12:50:46 +0300</small>
  </p>
 </body>
 </html>
