@@ -1,3 +1,5 @@
+#include <string>
+
 static const std::wstring ReadAscii(const unsigned char* s, unsigned len)
 {
     std::wstring result;

@@ -78,12 +78,15 @@ public:
         Save  = data[4] & 0x80;
         Ctrl1 = data[5] & 0x80;
         Ctrl2 = data[5] & 0x40;
-        Ctrl3 = Ctrl4 = false;
         FDS   = data[5] & 0x20;
+        Ctrl3 = data[5] & 0x08;
+        Ctrl4 = data[5] & 0x04;
         
         unsigned bytes_per_frame = 0;
         if(Ctrl1) ++bytes_per_frame;
         if(Ctrl2) ++bytes_per_frame;
+        if(Ctrl3) ++bytes_per_frame;
+        if(Ctrl4) ++bytes_per_frame;
         if(FDS)   ++bytes_per_frame;
         
         if(!bytes_per_frame)
@@ -107,6 +110,8 @@ public:
         {
             if(Ctrl1) Cdata[frame].Ctrl[0] = Famtasia::ToNormal(data[pos++]);
             if(Ctrl2) Cdata[frame].Ctrl[1] = Famtasia::ToNormal(data[pos++]);
+            if(Ctrl3) Cdata[frame].Ctrl[2] = Famtasia::ToNormal(data[pos++]);
+            if(Ctrl4) Cdata[frame].Ctrl[3] = Famtasia::ToNormal(data[pos++]);
             if(FDS)   Cdata[frame].FDS     = data[pos++];
         }
         return true;
@@ -122,6 +127,8 @@ public:
         if(Ctrl1) tmp|= 0x80;
         if(Ctrl2) tmp|= 0x40;
         if(FDS)   tmp|= 0x20;
+        if(Ctrl3) tmp|= 0x08;
+        if(Ctrl4) tmp|= 0x04;
         Write8(data, tmp);
         
         Write32(data, 0);
@@ -134,6 +141,8 @@ public:
         {
             if(Ctrl1) Write8(data, Famtasia::FromNormal(Cdata[a].Ctrl[0]));
             if(Ctrl2) Write8(data, Famtasia::FromNormal(Cdata[a].Ctrl[1]));
+            if(Ctrl3) Write8(data, Famtasia::FromNormal(Cdata[a].Ctrl[2]));
+            if(Ctrl4) Write8(data, Famtasia::FromNormal(Cdata[a].Ctrl[3]));
             if(FDS)   Write8(data, Cdata[a].FDS);
         }
     }
