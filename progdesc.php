@@ -14,7 +14,21 @@ function usagetext($prog)
 $text = array(
    '1. Purpose' => "
 
+<img src=\"http://bisqwit.iki.fi/src/nesmock-boxart.png\" align=\"left\" alt=\"nesmock\" />
 This program converts different format NES movies to other formats.
+ <p />
+It supports movie files of the following emulators: Famtasia, FCE-Ultra (FCEU),
+Nintendulator, VirtuaNES.
+ <p />
+This paragraph should be made much longer. It being too short now,
+it looks somewhat stupid if the cool image on the left side is all alone
+by itself. There should be more text in here. I'm not going to put some
+latin text here, this rant must do. Something about documentation, or
+about the freedom of open source.
+ <p />
+Nesmock does not support movie files for other systems such as SNES or Sega Genesis,
+because those systems have different hardware.
+<br clear=\"all\" />
 
 ", 'usage:1. Usage' => "
 
@@ -50,8 +64,8 @@ These planned things are currently missing:
  <li>Savestate support for:
   <ul>
    <li>Nintendulator (read, write)</li>
-   <li>FCEU (read, write)</li>
-   <li>VirtuaNES (read, write)</li>
+   <li>FCEU (read, write (partial support exists))</li>
+   <li>VirtuaNES (read (partial support exists), write)</li>
    <li>Famtasia (read, write)</li>
   </ul></li>
 </ul>

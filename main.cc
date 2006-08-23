@@ -134,9 +134,14 @@ public:
         char palRAM[0x20];
         char spRAM[0x100];
         char ppu[0x04];
+        char chrRAM[0x2000];
+        char xntaRAM[0x800];
+        char wRAM[0x2000];
         /* Joystick data */
         uint16_t joy_readbit;
         uint32_t joy;
+        /* Mapper stuff */
+        unsigned char mapperbytes[32];
     public:
         std::vector<unsigned char> rawdata;
     public:

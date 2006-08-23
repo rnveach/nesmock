@@ -1,4 +1,4 @@
-VERSION=1.5.1
+VERSION=1.6.0
 ARCHDIR=archives/
 ARCHNAME=nesmock-$(VERSION)
 ARCHFILES=\
@@ -11,10 +11,12 @@ ARCHFILES=\
 	nesticle.hh \
 	md5.cc md5.hh md5.h \
 	\
-	COPYING \
+	COPYING boxart.png \
         Makefile.sets progdesc.php
 
 include Makefile.sets
+
+OPTIM=-O0
 
 PREFIX=/usr/local
 BINDIR=$(PREFIX)/bin

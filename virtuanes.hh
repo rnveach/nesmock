@@ -5,10 +5,122 @@ class VirtuaNESMovie: public Movie
     class Statetype: public Movie::SaveState
     {
         // don't add member vars here either.
+    private:
+        struct VMVstateheader
+        {
+            char ID[12]; // "VirtuaNES ST"
+            uint_least16_t reserved;
+            uint_least16_t blockversion;
+            uint_least32_t ext0;
+            uint_least16_t ext1;
+            uint_least16_t ext2;
+            int_least32_t moviestep;
+            int_least32_t movioffset;
+        };
+        struct VMVstateblockheader
+        {
+            char ID[8];
+            uint_least16_t reserved;
+            uint_least16_t blockversion;
+            uint_least32_t blocksize;
+        };
     public:
         void Load(const std::vector<unsigned char>& data)
         {
+            bool global_header_received = false;
             // all data is ignored for now.
+            for(unsigned offset=0;
+                offset + sizeof(VMVstateblockheader) <= data.size();
+                )
+            {
+                const VMVstateblockheader& hdr = *(const VMVstateblockheader*)&data[offset];
+                if(!global_header_received)
+                {
+                    offset += sizeof(VMVstateheader);
+                    global_header_received = true;
+                    continue;
+                }
+                offset += sizeof(hdr);
+                
+                if(::memcmp(hdr.ID, "REG DATA", 8) == 0)
+                {
+                    this->regPC = *(const uint_least16_t*)&data[offset+0];
+                    this->regA  = *(const uint_least8_t*)&data[offset+2];
+                    this->regX  = *(const uint_least8_t*)&data[offset+3];
+                    this->regY  = *(const uint_least8_t*)&data[offset+4];
+                    this->regS  = *(const uint_least8_t*)&data[offset+5];
+                    this->regP  = *(const uint_least8_t*)&data[offset+6];
+                    
+                    this->ppu[0] = *(const uint_least8_t*)&data[offset+64+0];
+                    this->ppu[1] = *(const uint_least8_t*)&data[offset+64+1];
+                    this->ppu[2] = *(const uint_least8_t*)&data[offset+64+2];
+                    this->ppu[3] = *(const uint_least8_t*)&data[offset+64+3];
+                }
+                if(::memcmp(hdr.ID, "RAM DATA", 8) == 0)
+                {
+                    // ignore
+                    ::memcpy(this->RAM,       &data[offset+0],     0x800);
+                    ::memcpy(this->palRAM+ 0, &data[offset+0x800], 0x10);
+                    ::memcpy(this->palRAM+16, &data[offset+0x810], 0x10);
+                    ::memcpy(this->spRAM,     &data[offset+0x820], 0x100);
+                }
+                if(::memcmp(hdr.ID, "MMU DATA", 8) == 0)
+                {
+                    const unsigned char* cpu_mem_type/*[8]*/  = &data[offset+0];
+                    const unsigned char* cpu_mem_page/*[8]*/  = &data[offset+8];
+                    const unsigned char* ppu_mem_type/*[12]*/ = &data[offset+8+8];
+                    const unsigned char* ppu_mem_page/*[12]*/ = &data[offset+8+8+12];
+                    const unsigned char* cram_used/*[8]*/     = &data[offset+8+8+12+12];
+
+                    unsigned tmp = offset+8+8+12+12+8;
+
+                    for(unsigned a=3; a<8; ++a)
+                        if(cpu_mem_type[a] != 0)
+                        {
+                            ::memcpy(this->wRAM, &data[tmp], 0x2000);
+                            tmp += 0x2000;
+                        }
+
+                    ::memcpy(this->ntaRAM, &data[tmp], 0x1000);
+                    tmp += 0x1000;
+
+                    for(unsigned b=0,a=0; a<8; ++a)
+                        if(cram_used[a] != 0)
+                        {
+                            fprintf(stderr, "Loading chrram %u/8\n", a);
+                            
+                            if(b < 0x2000)
+                                ::memcpy(&this->chrRAM[b], &data[tmp], 0x1000);
+                            
+                            tmp += 0x1000;
+                            b += 0x1000;
+                        }
+                }
+                if(::memcmp(hdr.ID, "MMC DATA", 8) == 0)
+                {
+                    // TODO (mapper state)
+                    unsigned size = sizeof(this->mapperbytes);
+                    if(size > hdr.blocksize) size = hdr.blocksize;
+                    ::memcpy(this->mapperbytes, &data[offset], size);
+                }
+                if(::memcmp(hdr.ID, "CTR DATA", 8) == 0)
+                {
+                    // TODO
+                }
+                if(::memcmp(hdr.ID, "SND DATA", 8) == 0)
+                {
+                    // ignore
+                }
+                if(::memcmp(hdr.ID, "DISKDATA", 8) == 0)
+                {
+                    // ignore
+                }
+                if(::memcmp(hdr.ID, "EXCTRDAT", 8) == 0)
+                {
+                    // ignore
+                }
+                offset += hdr.blocksize;
+            }
         }
         void Write(std::vector<unsigned char>& data)
         {
@@ -26,6 +138,7 @@ public:
         Ctrl2 = data[0x10] & 0x02;
         Ctrl3 = data[0x10] & 0x04;
         Ctrl4 = data[0x10] & 0x08;
+        FDS   = false;
         
         RecordCount = R32(data[0x1C]);
         // TODO: ROM CRC
@@ -125,7 +238,7 @@ public:
             }
         }
     End:
-        Save=false; // We ignored the savestate
+        Save=true;
         
         return true;
     }

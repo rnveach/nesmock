@@ -1,3 +1,4 @@
+#include <cstdarg>
 class FCEUMovie: public Movie
 {
     // don't add member vars here.
@@ -5,28 +6,118 @@ class FCEUMovie: public Movie
     class Statetype: public Movie::SaveState
     {
         // don't add member vars here either.
+    private:
+        void WriteChunk(std::vector<unsigned char>& data, int chunktype, ...)
+        {
+            va_list ap;
+            va_start(ap, chunktype);
+            
+            data.push_back( (unsigned char) chunktype);
+            
+            unsigned hdr_pos = data.size();
+            
+            for(;;)
+            {
+                const char* hdr = va_arg(ap, const char*);
+                if(!hdr) break;
+                uint_least32_t size = va_arg(ap, int);
+                const char* ptr     = va_arg(ap, const char*);
+                
+                fprintf(stderr, "Writing %u bytes from %p (%.4s)\n",
+                    size, ptr, hdr);
+                fflush(stderr);
+                
+                char Buf[8] = {0,0,0,0,0,0,0,0};
+                ::strncpy(Buf,   hdr, 4);
+                ::memcpy(Buf+4, &size, 4);
+                data.insert(data.end(), Buf,Buf+8);
+                data.insert(data.end(), ptr,ptr+size);
+            }
+            va_end(ap);
+            
+            unsigned end_pos = data.size();
+            unsigned char header_buf[4];
+            *(uint_least32_t*)&header_buf[0] = end_pos - hdr_pos;
+            data.insert(data.begin()+hdr_pos, header_buf, header_buf+4);
+        }
+        
+        void WriteChunks(std::vector<unsigned char>& data)
+        {
+            WriteChunk(data, 1,
+                "PC", 2, &this->regPC,
+                "A",  1, &this->regA,
+                "P",  1, &this->regP,
+                "X",  1, &this->regX,
+                "Y",  1, &this->regY,
+                "S",  1, &this->regS,
+                "RAM",0x800, &this->RAM,
+                0);
+            
+            int jammed=0;
+            int_least32_t irqlow=0x200;
+            int_least32_t tcount=1;
+            int_least32_t count=-128;
+            uint_least64_t timestampbase=0;
+            
+            WriteChunk(data, 2,
+                "JAMM",1, &jammed,
+                "IQLB",4, &irqlow,
+                "ICoa",4, &tcount,
+                "ICou",4, &count,
+                "TSBS",8, &timestampbase,
+                0);
+            
+            WriteChunk(data, 3,
+                "NTAR",0x800, &this->ntaRAM,
+                "PRAM",0x20,  &this->palRAM,
+                "SPRA",0x100, &this->spRAM,
+                "PPUR",4,     &this->ppu,
+                0);
+            WriteChunk(data, 0x10, // ExChunks
+                "CHRR",0x2000,&this->chrRAM,
+                "EXNR", 0x800,&this->xntaRAM,
+                "WRAM",0x2000,&this->wRAM,
+                "MPBY",32, &this->mapperbytes,
+                "DREG", 4, &this->mapperbytes,
+                "BFRS", 1, &this->mapperbytes[4],
+                "BFFR", 1, &this->mapperbytes[5],
+                0);
+        }
     public:
         void Load(const std::vector<unsigned char>& data)
         {
             // all data is ignored for now.
             rawdata = data;
         }
-        void Write(std::vector<unsigned char>& data)
+        void Write(std::vector<unsigned char>& data, bool need_savestate)
         {
             if(!rawdata.empty())
             {
                 data = rawdata;
                 return;
             }
+            
+            unsigned header_pos = data.size();
+            if(need_savestate)
+            {
+                WriteChunks(data);
+            }
+            unsigned chunk_totalsize = data.size() - header_pos;
+            
             // Create a dummy FCEU save that contains nothing
             // but a header. FCEU will load it gracefully.
             // Nothing more is needed for a power-on savestate.
-            std::vector<unsigned char> buf(16);
+            unsigned char header_buf[16] = {0};
             
-            buf[0] = 'F'; buf[1] = 'C'; buf[2] = 'S';
+            header_buf[0] = 'F';
+            header_buf[1] = 'C';
+            header_buf[2] = 'S';
+            header_buf[3] = 0xFF; // stateversion found
+            *(uint_least32_t*)&header_buf[4] = chunk_totalsize;
+            *(uint_least32_t*)&header_buf[8] = 9812;
             
             // copy the state
-            data.insert(data.end(), buf.begin(), buf.end());
+            data.insert(data.begin()+header_pos, header_buf, header_buf+16);
         }
     };
     
@@ -177,7 +268,7 @@ public:
         FCMPutCommand(0x80); // last command = idle
         
         std::vector<unsigned char> statedata;
-        (reinterpret_cast<Statetype&>(State)).Write(statedata);
+        (reinterpret_cast<Statetype&>(State)).Write(statedata, Save);
 
         std::vector<unsigned char> varlen_hdr;
         PutUTF8(varlen_hdr, ROMName);
