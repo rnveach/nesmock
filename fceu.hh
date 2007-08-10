@@ -147,9 +147,14 @@ public:
         unsigned mnlength = std::strlen((const char*)&data[0x34+rnlength+1]);
         MovieName = ReadUTF8(&data[0x34+rnlength+1], mnlength);
         
-        std::vector<unsigned char> statedata(data.begin()+SaveOffs, data.begin()+CtrlOffs);
+        unsigned StateLen = R32(data[SaveOffs+4]);
+        std::vector<unsigned char> statedata
+            (data.begin()+SaveOffs,
+             data.begin()+SaveOffs + 16 + StateLen);
         
         (reinterpret_cast<Statetype&>(State)).Load(statedata);
+        
+        fprintf(stderr, "acquired savestate size is 0x%X\n", statedata.size());
         
         unsigned char joop[4] = {0,0,0,0};
         
@@ -175,9 +180,18 @@ public:
 
             for(;;)
             {
-                /* Save the controlled data */
-                for(unsigned ctrl=0; ctrl<4; ++ctrl)
-                    Cdata[frame].Ctrl[ctrl] = joop[ctrl];
+                if(frame >= Cdata.size())
+                {
+                    fprintf(stderr,
+                        "Error: Movie header indicates frame count as %u, stream attempts to define events for frame %u\n",
+                            Cdata.size(), frame);
+                }
+                else
+                {
+                    /* Save the controlled data */
+                    for(unsigned ctrl=0; ctrl<4; ++ctrl)
+                        Cdata[frame].Ctrl[ctrl] = joop[ctrl];
+                }
                 
                 if(!delta)break;
                 ++frame;
@@ -279,6 +293,8 @@ public:
         
         while(statedata.size() & 3)  Write8(statedata, 0);
         while(varlen_hdr.size() & 3) Write8(varlen_hdr, 0);
+        
+        fprintf(stderr, "savestate size is 0x%X\n", statedata.size());
         
         Write32(data, FOURCC("FCM\032"));
         Write32(data, 2);
