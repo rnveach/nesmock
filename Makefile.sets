@@ -1,49 +1,41 @@
-CC=gcc
-CPP=g++
-CXX=g++
-#CXX=g++-2.95
-#CXX=g++-3.3
-#CXX=g++-4.2
-#CXX=remotegcc -soktober -- g++
-
 CPPDEBUG=-g -pipe
 
 # Options for compiling, generally.
 CPPFLAGS=-DVERSION=\"$(VERSION)\" $(CPPDEBUG)
 #         -fmessage-length=0
 
-WARNINGS=-Wall \
-    -Wundef \
-    -Wcast-qual \
-    -Wpointer-arith \
-    -Wconversion \
-    -Wwrite-strings \
-    -Wsign-compare \
-    -Wredundant-decls \
-    -Winit-self \
-    -Wextra \
-    -Wcast-align -Wformat
-
-#    -Wtraditional
-
 # C specific warnings
-CCOPTS=$(WARNINGS) -Waggregate-return -Wshadow -Winline \
-    -Wstrict-prototypes \
-    -Wmissing-prototypes
-
+CCOPTS=$(WARNINGS) $(CWARNINGS)
 # C++ specific warnings
-CXXOPTS=$(WARNINGS) \
-	-Woverloaded-virtual
-#	-Weffc++
+CXXOPTS=$(WARNINGS) $(CXXWARNINGS)
+
 
 # Optimization
-OPTIM=-ffast-math -O1
+OPTIM=-O3
 #-march=pentiumpro
 
 # Flags.
 CFLAGS=$(OPTIM) $(CCOPTS)
-CXXFLAGS=$(OPTIM) $(CXXOPTS) -fno-default-inline
+CXXFLAGS=$(OPTIM) $(CXXOPTS)
 #-fno-rtti
 
 #LDFLAGS=-pg -ax
 LDFLAGS=-g
+
+#####
+# These options were set by ./configure
+# at Thu Apr 10 23:34:43 EEST 2008
+# for Linux chii 2.6.24.2.2 #1 SMP Thu Feb 28 19:32:31 EET 2008 x86_64 GNU/Linux
+# To change, run ./configure again.
+#
+CC=gcc
+CPP=cpp
+CXX=g++
+OPTIM +=  -ftree-vectorize -ffast-math -minline-stringops-dynamically -mmmx -msse -msse2
+CPPFLAGS +=   -DUSE_PTHREADS=0 -DHASH_MAP=1
+LDFLAGS +=  
+WARNINGS +=  -Wall -Wundef -Wcast-qual -Wpointer-arith -Wconversion -Wwrite-strings -Wsign-compare -Wredundant-decls -Winit-self -Wextra -Wcast-align -Wformat
+CWARNINGS +=  -Waggregate-return -Wshadow -Winline -Wstrict-prototypes -Wmissing-prototypes
+CXXWARNINGS +=  -Woverloaded-virtual -Weffc++
+
+

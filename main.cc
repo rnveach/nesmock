@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include <stdint.h>
+#include <cstdio>
 #include <cstring>
 #include <cwchar>
 #include <cctype>

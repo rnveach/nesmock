@@ -1,4 +1,5 @@
 #include <string>
+#include <cstdlib>
 
 static const std::wstring ReadAscii(const unsigned char* s, unsigned len)
 {

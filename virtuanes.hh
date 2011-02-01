@@ -133,7 +133,7 @@ public:
         
         unsigned version = R16(data[0x0C]);
         
-        Save  = true; // VirtuaNES movies are always savestate-basde
+        Save = (version < 0x0400) ? true : !(data[0x10] & 0x40);
         Ctrl1 = data[0x10] & 0x01;
         Ctrl2 = data[0x10] & 0x02;
         Ctrl3 = data[0x10] & 0x04;
@@ -162,6 +162,7 @@ public:
                 break;
             }
             case 0x0300:
+            case 0x0400:
             {
                 SaveBegin  = R32(data[0x2C]);
                 SaveEnd    = R32(data[0x30]);
@@ -179,16 +180,19 @@ public:
             }
         }
         
-        if(SaveBegin > SaveEnd || SaveEnd > data.size())
+        if(Save)
         {
-            fprintf(stderr, "Invalid VirtuaNES movie file: SaveBegin=%u, SaveEnd=%u, Filesize=%u\n",
-                SaveBegin, SaveEnd, (unsigned)data.size());
-            return false;
+            if(SaveBegin > SaveEnd || SaveEnd > data.size())
+            {
+                fprintf(stderr, "Invalid VirtuaNES movie file: SaveBegin=%u, SaveEnd=%u, Filesize=%u\n",
+                        SaveBegin, SaveEnd, (unsigned)data.size());
+                return false;
+            }
+            
+            std::vector<unsigned char> statedata(data.begin()+SaveBegin, data.begin()+SaveEnd);
+            
+            (reinterpret_cast<Statetype&>(State)).Load(statedata);
         }
-        
-        std::vector<unsigned char> statedata(data.begin()+SaveBegin, data.begin()+SaveEnd);
-
-        (reinterpret_cast<Statetype&>(State)).Load(statedata);
         
         Cdata.SetSize(FrameCount);
         
@@ -238,8 +242,6 @@ public:
             }
         }
     End:
-        Save=true;
-        
         return true;
     }
 
