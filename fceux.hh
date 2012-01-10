@@ -49,7 +49,7 @@ namespace FCEUX
         }
         return ret;
     }
-    void StringToBytes(const std::wstring& str, unsigned char* begin, unsigned char* end)
+    unsigned StringToBytes(const std::wstring& str, unsigned char* begin, unsigned char* end)
     {
         unsigned len = end-begin;
         if(str.substr(0,7) == L"base64:")
@@ -61,11 +61,11 @@ namespace FCEUX
                 unsigned char input[4], converted[4];
                 for(int i=0; i<4; ++i)
                 {
-                    if(pos >= str.size() && i > 0) return; // invalid data
+                    if(pos >= str.size() && i > 0) return 0; // invalid data
                     input[i]     = str[pos++];
-                    if(input[i] & 0x80) return;     // illegal character
+                    if(input[i] & 0x80) return 0;     // illegal character
                     converted[i] = Base64Table[input[i]^0x80];
-                    if(converted[i] & 0x80) return; // illegal character
+                    if(converted[i] & 0x80) return 0; // illegal character
                 }
                 unsigned char outpacket[3] =
                 {
@@ -79,7 +79,7 @@ namespace FCEUX
                 tgt += outlen;
                 len -= outlen;
             }
-            return;
+            return tgt-begin;
         }
         unsigned long value=0;
         std::swscanf(str.c_str(), L"%li", &value);
@@ -88,25 +88,14 @@ namespace FCEUX
             *begin++ = value & 0xFF;
             value >>= 8;
         }
+        return len;
     }
 }
 
 class FCEUXMovie: public Movie
 {
     // don't add member vars here.
-
-    class Statetype: public Movie::SaveState
-    {
-        // don't add member vars here either.
-    public:
-        void Load(const std::vector<unsigned char>& data)
-        {
-            // all data is ignored for now.
-        }
-        void Write(std::vector<unsigned char>& data)
-        {
-        }
-    };
+    typedef FCEUMovie::Statetype Statetype;
 
 public:
     bool Load(const std::vector<unsigned char>& data)
@@ -140,6 +129,16 @@ public:
             if(line == L"port0") std::swscanf(content.c_str(), L"%d", &port0);
             if(line == L"port1") std::swscanf(content.c_str(), L"%d", &port1);
             if(line == L"port2") std::swscanf(content.c_str(), L"%d", &port2);
+            if(line == L"savestate")
+            {
+                Save = true;
+                std::vector<unsigned char> statedata(131072);
+                unsigned savelen = FCEUX::StringToBytes
+                    (content, &statedata[0], &statedata[0]+statedata.size());
+                statedata.resize(savelen);
+                fprintf(stderr, "acquired savestate size is 0x%lX\n", (unsigned long)statedata.size());
+                (reinterpret_cast<Statetype&>(State)).Load(statedata);
+            }
         }
         if(!version_found) return false;
 
@@ -152,7 +151,6 @@ public:
             Ctrl2 = port1 == 1;
             Ctrl1 = port0 == 1;
         }
-        Save = false;
 
         FrameCount = 0;
         Cdata.clear();
@@ -202,6 +200,13 @@ public:
         StrPrint(data, "port0 %d\n", Ctrl1?1:0);
         StrPrint(data, "port1 %d\n", Ctrl2?1:0);
         StrPrint(data, "port2 %d\n", (fourscore ? 0 : (Ctrl3?1:0)));
+
+        if(Save)
+        {
+            std::vector<unsigned char> statedata;
+            (reinterpret_cast<Statetype&>(State)).Write(statedata, Save);
+            StrPrint(data, "savestate %ls\n", FCEUX::BytesToString(&statedata[0], &statedata[0]+statedata.size()).c_str());
+        }
 
         bool states[4] = {fourscore||Ctrl1,fourscore||Ctrl2,fourscore||Ctrl3,fourscore||Ctrl4};
 

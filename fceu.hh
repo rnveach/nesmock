@@ -2,7 +2,7 @@
 class FCEUMovie: public Movie
 {
     // don't add member vars here.
-    
+public:
     class Statetype: public Movie::SaveState
     {
         // don't add member vars here either.
