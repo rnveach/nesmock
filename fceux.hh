@@ -1,3 +1,96 @@
+namespace FCEUX
+{
+    static const struct Base64Table
+    {
+        Base64Table()
+        {
+            size_t a=0;
+            for(a=0; a<256; ++a) data[a] = 0xFF; // mark everything as invalid by default
+            // create value->ascii mapping
+            a=0;
+            for(unsigned char c='A'; c<='Z'; ++c) data[a++] = c; // 0..25
+            for(unsigned char c='a'; c<='z'; ++c) data[a++] = c; // 26..51
+            for(unsigned char c='0'; c<='9'; ++c) data[a++] = c; // 52..61
+            data[62] = '+';                             // 62
+            data[63] = '/';                             // 63
+            // create ascii->value mapping (but due to overlap, write it to highbit region)
+            for(a=0; a<64; ++a) data[data[a]^0x80] = a; // 
+            data[((unsigned char)'=') ^ 0x80] = 0;
+        }
+        unsigned char operator[] (size_t pos) const { return data[pos]; }
+    private:
+        unsigned char data[256];
+    } Base64Table;
+
+    std::wstring BytesToString(const unsigned char* begin, const unsigned char* end)
+    {
+        unsigned len = end-begin;
+        if(len == 1)
+            { wchar_t Buf[64]; std::swprintf(Buf,sizeof(Buf), L"%d", *begin); return Buf; }
+        if(len == 2)
+            { wchar_t Buf[64]; std::swprintf(Buf,sizeof(Buf), L"%d", R16(begin)); return Buf; }
+        if(len == 4)
+            { wchar_t Buf[64]; std::swprintf(Buf,sizeof(Buf), L"%d", R32(begin)); return Buf; }
+        std::wstring ret = L"base64:";
+        const unsigned char* src = begin;
+        for(unsigned n; len > 0; len -= n)
+        {
+            unsigned char input[3] = {0,0,0};
+            for(n=0; n<3 && n<len; ++n)
+                input[n] = *src++;
+            wchar_t output[4] =
+            {
+                Base64Table[ input[0] >> 2 ],
+                Base64Table[ ((input[0] & 0x03) << 4) | (input[1] >> 4) ],
+                n<2 ? '=' : Base64Table[ ((input[1] & 0x0F) << 2) | (input[2] >> 6) ],
+                n<3 ? '=' : Base64Table[ input[2] & 0x3F ]
+            };
+            ret.append(output, output+4);
+        }
+        return ret;
+    }
+    void StringToBytes(const std::wstring& str, unsigned char* begin, unsigned char* end)
+    {
+        unsigned len = end-begin;
+        if(str.substr(0,7) == L"base64:")
+        {
+            // base64
+            unsigned char* tgt = begin;
+            for(size_t pos = 7; pos < str.size() && len > 0; )
+            {
+                unsigned char input[4], converted[4];
+                for(int i=0; i<4; ++i)
+                {
+                    if(pos >= str.size() && i > 0) return; // invalid data
+                    input[i]     = str[pos++];
+                    if(input[i] & 0x80) return;     // illegal character
+                    converted[i] = Base64Table[input[i]^0x80];
+                    if(converted[i] & 0x80) return; // illegal character
+                }
+                unsigned char outpacket[3] =
+                {
+                    (unsigned char)( (converted[0] << 2) | (converted[1] >> 4) ),
+                    (unsigned char)( (converted[1] << 4) | (converted[2] >> 2) ),
+                    (unsigned char)( (converted[2] << 6) | (converted[3])      )
+                };
+                unsigned outlen = (input[2] == '=') ? 1 : (input[3] == '=' ? 2 : 3);
+                if(outlen > len) outlen = len; 
+                std::memcpy(tgt, outpacket, outlen);
+                tgt += outlen;
+                len -= outlen;
+            }
+            return;
+        }
+        unsigned long value=0;
+        std::swscanf(str.c_str(), L"%li", &value);
+        while(begin < end)
+        {
+            *begin++ = value & 0xFF;
+            value >>= 8;
+        }
+    }
+}
+
 class FCEUXMovie: public Movie
 {
     // don't add member vars here.
@@ -39,6 +132,7 @@ public:
             if(line == L"version" && content == L"3") version_found = true;
             if(line == L"palFlag") PAL = content == L"1";
             if(line == L"romFilename") ROMName = content;
+            if(line == L"romChecksum") FCEUX::StringToBytes(content, MD5sum+0, MD5sum+16);
             if(line == L"comment") MovieName = content;
             if(line == L"emuVersion") std::swscanf(content.c_str(), L"%d", &FCEUversion);
             if(line == L"rerecordCount") std::swscanf(content.c_str(), L"%d", &RecordCount);
@@ -98,6 +192,7 @@ public:
         StrPrint(data, "palFlag %d\n", PAL?1:0);
         StrPrint(data, "FDS %d\n", FDS?1:0);
         StrPrint(data, "romFilename %ls\n", ROMName.c_str());
+        StrPrint(data, "romChecksum %ls\n", FCEUX::BytesToString(MD5sum, MD5sum+16).c_str());
 
         bool fourscore = Ctrl4;
 

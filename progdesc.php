@@ -3,6 +3,7 @@
 
 $title = 'NES movie fileformat converter';
 $progname = 'nesmock';
+$git = 'git://bisqwit.iki.fi/nesmock.git';
 
 function usagetext($prog)
 {
@@ -42,7 +43,7 @@ If you are doubting whether this program actually works at all, try converting
 Super Mario Bros movies. I have had complete success with them.
  <p>
 Hint: Nesmock can be used for editing FCM files by first
-converting them to FMV (which is easier to edit than FCM)
+converting them to FMV or FM2 (which are easier to edit than FCM)
 and then back to FCM.
 
 ", '1. Copying' => "
