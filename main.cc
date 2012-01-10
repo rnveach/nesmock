@@ -45,6 +45,7 @@ protected:
     {
         unsigned char Ctrl[4];
         unsigned char FDS;
+        bool Reset;
     };
     struct ControlData: public std::vector<StatusMap>
     {
@@ -70,15 +71,25 @@ protected:
             if(offset > 0)
             {
                 std::cout << "Inserting " << offset << " frames at " << frameno << std::endl;
+
+                bool reset = this->operator[](frameno).Reset;
+                if(frameno == 0) this->operator[](frameno).Reset = false;
+
                 this->insert(this->begin() + frameno,
                              offset,
                              (*this)[frameno]);
+
+                if(frameno == 0) this->operator[](frameno).Reset = reset;
             }
             else if(offset < 0)
             {
                 std::cout << "Deleting " << -offset << " frames at " << frameno << std::endl;
+                bool reset = this->operator[](frameno).Reset;
+
                 this->erase(this->begin() + frameno,
                             this->begin() + frameno - offset);
+
+                if(frameno == 0) this->operator[](frameno).Reset |= reset;
             }
         }
         
@@ -243,6 +254,7 @@ public:
 #include "virtuanes.hh"
 #include "nintendulator.hh"
 #include "nesticle.hh"
+#include "fceux.hh"
 
 bool Movie::Read(const std::vector<unsigned char>& data)
 {
@@ -251,6 +263,7 @@ bool Movie::Read(const std::vector<unsigned char>& data)
     ||  (reinterpret_cast<FCEUMovie*>(this))->Load(data)
     ||  (reinterpret_cast<VirtuaNESMovie*>(this))->Load(data)
     ||  (reinterpret_cast<NintendulatorMovie*>(this))->Load(data)
+    ||  (reinterpret_cast<FCEUXMovie*>(this))->Load(data)
     ||  (reinterpret_cast<NesticleMovie*>(this))->Load(data);
 }
 
@@ -435,8 +448,8 @@ int main(int argc, char** argv)
             }
             case 'h':
             {
-                std::cout << 
-                    "nesmock v"VERSION" - Copyright (C) 1992,2006 Bisqwit (http://iki.fi/bisqwit/)\n"
+                std::cout <<
+                    "nesmock v"VERSION" - Copyright (C) 1992,2012 Bisqwit (http://iki.fi/bisqwit/)\n"
                     "\n"
                     "Usage: nesmock [<options>] <inputfile> <outputfile>\n"
                     "\n"
@@ -477,6 +490,7 @@ int main(int argc, char** argv)
                     "  FCM  (FCEU 0.98.12)        - Read & Write\n"
                     "  NMV  (Nintendulator 0.950) - Read & Write\n"
                     "  VMV  (VirtuaNES)           - Read\n"
+                    "  FM2  (FCEUX)               - Read & Write\n"
                  // "  NSM  (Nesticle)            - none\n"
                     "\n"
                     "Example:\n"
@@ -606,6 +620,12 @@ int main(int argc, char** argv)
     {
         std::vector<unsigned char> file2;
         (reinterpret_cast<NintendulatorMovie&>(movie)).Write(file2);
+        WriteFile(file2, fn2);
+    }
+    else if(ext == "fm2")
+    {
+        std::vector<unsigned char> file2;
+        (reinterpret_cast<FCEUXMovie&>(movie)).Write(file2);
         WriteFile(file2, fn2);
     }
     else

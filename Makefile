@@ -1,4 +1,4 @@
-VERSION=1.6.2
+VERSION=1.7.0
 ARCHDIR=archives/
 ARCHNAME=nesmock-$(VERSION)
 ARCHFILES=\
@@ -9,6 +9,7 @@ ARCHFILES=\
 	virtuanes.hh \
 	nintendulator.hh \
 	nesticle.hh \
+	fceux.hh \
 	md5.cc md5.hh md5.h \
 	\
 	COPYING boxart.png \
@@ -16,14 +17,14 @@ ARCHFILES=\
 
 include Makefile.sets
 
-OPTIM=-O0
+OPTIM=-O2
 
 PREFIX=/usr/local
 BINDIR=$(PREFIX)/bin
 INSTALLPROGS=nesmock
 INSTALL=install
 
-WARNINGS += -Wno-unused
+WARNINGS += -Wno-unused -Wno-conversion
 
 # Building for Windows:
 #HOST=/opt/xmingw/bin/i386-mingw32msvc-
@@ -33,6 +34,8 @@ WARNINGS += -Wno-unused
 #HOST=/usr/local/mingw32/bin/i586-mingw32msvc-
 #LDOPTS = -L/usr/local/mingw32/lib
 
+
+CXXFLAGS += -std=c++0x
 
 # Building for native:
 HOST=

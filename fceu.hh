@@ -34,11 +34,11 @@ class FCEUMovie: public Movie
                 data.insert(data.end(), ptr,ptr+size);
             }
             va_end(ap);
-            
+
             unsigned end_pos = data.size();
-            unsigned char header_buf[4];
-            *(uint_least32_t*)&header_buf[0] = end_pos - hdr_pos;
-            data.insert(data.begin()+hdr_pos, header_buf, header_buf+4);
+            std::vector<unsigned char> header_buf;
+            Write32(header_buf, end_pos - hdr_pos);
+            data.insert(data.begin()+hdr_pos, header_buf.begin(), header_buf.end());
         }
         
         void WriteChunks(std::vector<unsigned char>& data)
@@ -107,17 +107,14 @@ class FCEUMovie: public Movie
             // Create a dummy FCEU save that contains nothing
             // but a header. FCEU will load it gracefully.
             // Nothing more is needed for a power-on savestate.
-            unsigned char header_buf[16] = {0};
-            
-            header_buf[0] = 'F';
-            header_buf[1] = 'C';
-            header_buf[2] = 'S';
-            header_buf[3] = 0xFF; // stateversion found
-            *(uint_least32_t*)&header_buf[4] = chunk_totalsize;
-            *(uint_least32_t*)&header_buf[8] = 9812;
-            
+            std::vector<unsigned char> header_buf = { 'F','C','S',0xFF };
+            // 0xFF = stateversion found
+            Write32(header_buf, chunk_totalsize);
+            Write32(header_buf, 9812);
+            Write32(header_buf, 0); // Fill to 16 bytes
+
             // copy the state
-            data.insert(data.begin()+header_pos, header_buf, header_buf+16);
+            data.insert(data.begin()+header_pos, header_buf.begin(), header_buf.end());
         }
     };
     
@@ -154,7 +151,7 @@ public:
         
         (reinterpret_cast<Statetype&>(State)).Load(statedata);
         
-        fprintf(stderr, "acquired savestate size is 0x%X\n", statedata.size());
+        fprintf(stderr, "acquired savestate size is 0x%lX\n", (unsigned long)statedata.size());
         
         unsigned char joop[4] = {0,0,0,0};
         
@@ -183,8 +180,8 @@ public:
                 if(frame >= Cdata.size())
                 {
                     fprintf(stderr,
-                        "Error: Movie header indicates frame count as %u, stream attempts to define events for frame %u\n",
-                            Cdata.size(), frame);
+                        "Error: Movie header indicates frame count as %lu, stream attempts to define events for frame %u\n",
+                            (unsigned long)Cdata.size(), frame);
                 }
                 else
                 {
@@ -213,7 +210,7 @@ public:
                 switch(Data)
                 {
                     case 0: break; // nothing
-                    case 1: Save=false; break; // reset
+                    case 1: Save=false; Cdata[frame].Reset = true; break; // reset
                     case 2: Save=false; break; // power cycle
                     case 7: break; // VS coin
                     case 8: break; // VS dip0
@@ -259,12 +256,13 @@ public:
             if(State.rawdata.empty())
                 FCMPutCommand(0x82); // start with a power cycle
             else
-                FCMPutCommand(0x81); // start with a reset
+                {Cdata[0].Reset = true;/*FCMPutCommand(0x81);*/} // start with a reset
         }
         
         unsigned char joop[4] = {0,0,0,0};
         for(unsigned a=0; a<FrameCount; ++a)
         {
+            if(Cdata[a].Reset) FCMPutCommand(0x81); // reset
             for(unsigned ctrl=0; ctrl<4; ++ctrl)
             {
                 if(ctrl == 0 && !Ctrl1) continue;
@@ -294,7 +292,7 @@ public:
         while(statedata.size() & 3)  Write8(statedata, 0);
         while(varlen_hdr.size() & 3) Write8(varlen_hdr, 0);
         
-        fprintf(stderr, "savestate size is 0x%X\n", statedata.size());
+        fprintf(stderr, "savestate size is 0x%lX\n", (unsigned long) statedata.size());
         
         Write32(data, FOURCC("FCM\032"));
         Write32(data, 2);

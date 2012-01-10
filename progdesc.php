@@ -18,7 +18,7 @@ $text = array(
 This program converts different format NES movies to other formats.
  <p />
 It supports movie files of the following emulators: Famtasia, FCE-Ultra (FCEU),
-Nintendulator, VirtuaNES.
+Nintendulator, VirtuaNES, FCEUX.
  <p />
 This paragraph should be made much longer. It being too short now,
 it looks somewhat stupid if the cool image on the left side is all alone
@@ -67,6 +67,7 @@ These planned things are currently missing:
    <li>FCEU (read, write (partial support exists))</li>
    <li>VirtuaNES (read (partial support exists), write)</li>
    <li>Famtasia (read, write)</li>
+   <li>FCEUX (read, write)</li>
   </ul></li>
 </ul>
 

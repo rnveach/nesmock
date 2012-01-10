@@ -1,5 +1,6 @@
 #include <string>
 #include <cstdlib>
+#include <stdarg.h>
 
 static const std::wstring ReadAscii(const unsigned char* s, unsigned len)
 {
@@ -11,6 +12,13 @@ static const std::wstring ReadU16str(const unsigned char* s, unsigned len)
 {
     std::wstring result;
     while(len > 0) { result += (*s) | (s[1] << 8); s += 2; }
+    return result;
+}
+static const std::wstring ReadLine(const unsigned char* s, unsigned limit, unsigned& len)
+{
+    std::wstring result;
+    while(limit > 0 && *s != '\n') { ++len; result += *s++; --limit; }
+    while(limit > 0 && *s == '\n') { ++len; ++s; --limit; }
     return result;
 }
 static const std::wstring ReadUTF8(const unsigned char* s, unsigned len)
@@ -86,4 +94,13 @@ static void WriteAsciiFZ(std::vector<unsigned char>& target, const std::wstring&
 {
     for(unsigned a=0; a<length; ++a)
         target.push_back(a < s.length() ? s[a] : 0);
+}
+static void StrPrint(std::vector<unsigned char>& data, const char* fmt, ...)
+{
+    char Buf[4096];
+    va_list ap;
+    va_start(ap, fmt);
+    int n = vsnprintf(Buf, sizeof(Buf), fmt, ap);
+    va_end(ap);
+    data.insert(data.end(), Buf, Buf+n);
 }

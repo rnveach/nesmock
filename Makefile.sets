@@ -31,11 +31,11 @@ LDFLAGS=-g
 CC=gcc
 CPP=cpp
 CXX=g++
-OPTIM +=  -ftree-vectorize -ffast-math -minline-stringops-dynamically -mmmx -msse -msse2
+OPTIM +=  -ftree-vectorize -ffast-math -minline-stringops-dynamically
 CPPFLAGS +=   -DUSE_PTHREADS=0 -DHASH_MAP=1
 LDFLAGS +=  
 WARNINGS +=  -Wall -Wundef -Wcast-qual -Wpointer-arith -Wconversion -Wwrite-strings -Wsign-compare -Wredundant-decls -Winit-self -Wextra -Wcast-align -Wformat
 CWARNINGS +=  -Waggregate-return -Wshadow -Winline -Wstrict-prototypes -Wmissing-prototypes
-CXXWARNINGS +=  -Woverloaded-virtual -Weffc++
+CXXWARNINGS +=  -Woverloaded-virtual
 
 
