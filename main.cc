@@ -451,7 +451,7 @@ int main(int argc, char** argv)
             case 'h':
             {
                 std::cout <<
-                    "nesmock v"VERSION" - Copyright (C) 1992,2012 Bisqwit (http://iki.fi/bisqwit/)\n"
+                    "nesmock v" VERSION " - Copyright (C) 1992,2012 Bisqwit (http://iki.fi/bisqwit/)\n"
                     "\n"
                     "Usage: nesmock [<options>] <inputfile> <outputfile>\n"
                     "\n"

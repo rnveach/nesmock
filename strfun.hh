@@ -8,12 +8,6 @@ static const std::wstring ReadAscii(const unsigned char* s, unsigned len)
     while(len--) result += *s++;
     return result;
 }
-static const std::wstring ReadU16str(const unsigned char* s, unsigned len)
-{
-    std::wstring result;
-    while(len > 0) { result += (*s) | (s[1] << 8); s += 2; }
-    return result;
-}
 static const std::wstring ReadLine(const unsigned char* s, unsigned limit, unsigned& len)
 {
     std::wstring result;

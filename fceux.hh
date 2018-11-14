@@ -54,8 +54,8 @@ namespace FCEUX
             {
                 Base64Table[ input[0] >> 2 ],
                 Base64Table[ ((input[0] & 0x03) << 4) | (input[1] >> 4) ],
-                n<2 ? '=' : Base64Table[ ((input[1] & 0x0F) << 2) | (input[2] >> 6) ],
-                n<3 ? '=' : Base64Table[ input[2] & 0x3F ]
+                (wchar_t)(n<2 ? '=' : Base64Table[ ((input[1] & 0x0F) << 2) | (input[2] >> 6) ]),
+                (wchar_t)(n<3 ? '=' : Base64Table[ input[2] & 0x3F ])
             };
             ret.append(output, output+4);
         }

@@ -67,9 +67,6 @@ class VirtuaNESMovie: public Movie
                 if(::memcmp(hdr.ID, "MMU DATA", 8) == 0)
                 {
                     const unsigned char* cpu_mem_type/*[8]*/  = &data[offset+0];
-                    const unsigned char* cpu_mem_page/*[8]*/  = &data[offset+8];
-                    const unsigned char* ppu_mem_type/*[12]*/ = &data[offset+8+8];
-                    const unsigned char* ppu_mem_page/*[12]*/ = &data[offset+8+8+12];
                     const unsigned char* cram_used/*[8]*/     = &data[offset+8+8+12+12];
 
                     unsigned tmp = offset+8+8+12+12+8;
@@ -218,7 +215,7 @@ public:
                     ++pos;
                     if(Data == 0xF0)
                     {
-                        unsigned char byte1 = data[pos++];
+                        pos++;
                         unsigned char byte2 = data[pos++];
                         if(byte2 == 0)
                         {
@@ -233,7 +230,7 @@ public:
                     else if(Data == 0xF3)
                     {
                         /* 4 bytes as params */
-                        unsigned dwdata = R32(data[pos]); pos += 4;
+                        pos += 4;
                         /* SetSyncExData(dwdata) */
                     }
                 }

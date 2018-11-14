@@ -10,7 +10,6 @@ static uint16_t TWOCC(const uint8_t x[2])
 }
 
 static uint32_t FOURCC(const char *x) { return FOURCC((const uint8_t*)x); }
-static uint16_t TWOCC(const char *x) { return TWOCC((const uint8_t*)x); }
 
 
 #define R32(x) FOURCC(reinterpret_cast<const uint8_t*>(&(x)))

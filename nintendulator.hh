@@ -11,7 +11,6 @@ class NintendulatorMovie: public Movie
         void Load(const std::vector<unsigned char>& data)
         {
             unsigned cboffset = 0x10;
-            bool hasmovie = false;
             while (cboffset < data.size())
             {
                 uint32_t cbname = R32(data[cboffset]);
