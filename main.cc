@@ -17,6 +17,8 @@
 #include "utility.hh"
 #include "md5.hh"
 
+#define VERSION "1.7.2"
+
 class MovieConfigurator;
 class Movie
 {

@@ -26,11 +26,23 @@ namespace FCEUX
     {
         unsigned len = end-begin;
         if(len == 1)
-            { wchar_t Buf[64]; std::swprintf(Buf,sizeof(Buf), L"%d", *begin); return Buf; }
+        {
+            wchar_t Buf[64];
+            swprintf(Buf,/*sizeof(Buf),*/ L"%d", *begin);
+            return Buf;
+        }
         if(len == 2)
-            { wchar_t Buf[64]; std::swprintf(Buf,sizeof(Buf), L"%d", R16(begin)); return Buf; }
+        {
+            wchar_t Buf[64];
+            swprintf(Buf,/*sizeof(Buf),*/ L"%d", R16(begin));
+            return Buf;
+        }
         if(len == 4)
-            { wchar_t Buf[64]; std::swprintf(Buf,sizeof(Buf), L"%d", R32(begin)); return Buf; }
+        {
+            wchar_t Buf[64];
+            swprintf(Buf,/*sizeof(Buf),*/ L"%d", R32(begin));
+            return Buf;
+        }
         std::wstring ret = L"base64:";
         const unsigned char* src = begin;
         for(unsigned n; len > 0; len -= n)
